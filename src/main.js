@@ -34,6 +34,10 @@ const BUILDERS = {
 
 const params = new URLSearchParams(location.search);
 
+// build stamp so a stale cached page is easy to spot
+const buildEl = document.getElementById('build');
+if (buildEl) buildEl.textContent = `build ${__BUILD__}`;
+
 // --- renderer ---
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
