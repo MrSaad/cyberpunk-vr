@@ -11,8 +11,8 @@ export const TRAIN_LENGTH = 30; // car spans z -15..15 in local space
 export const DOOR_Z = [-9, 0, 9];
 export const DOOR_WIDTH = 1.6;
 export const DWELL = 22;
-export const VMAX = 36;
-export const ACCEL = 2.2;
+export const VMAX = 62;
+export const ACCEL = 4.2;
 export const TRAIN_COUNT = 4;
 
 // Order around the loop (counter-clockwise). `side` is which side of the
