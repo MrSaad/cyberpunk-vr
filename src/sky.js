@@ -58,7 +58,10 @@ export function buildSky() {
   mesh.renderOrder = -10;
   mesh.frustumCulled = false;
   mesh.onBeforeRender = (renderer, scene, camera) => {
-    camera.getWorldPosition(mesh.position);
+    // Read the position straight from matrixWorld. getWorldPosition() would call
+    // updateWorldMatrix(), which on the parentless per-eye XR cameras rebuilds
+    // their view matrix from the raw headset pose and drops the player rig.
+    mesh.position.setFromMatrixPosition(camera.matrixWorld);
     mesh.updateMatrixWorld();
   };
   return mesh;
