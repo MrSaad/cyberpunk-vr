@@ -61,7 +61,7 @@ export class Rain {
       fragmentShader: /* glsl */ `
         varying float vA; varying float vY;
         void main(){
-          gl_FragColor = vec4(vec3(0.55, 0.6, 0.8) * vA * 0.22 * vY, 1.0);
+          gl_FragColor = vec4(vec3(0.7, 0.6, 0.5) * vA * 0.13 * vY, 1.0);
         }`,
       transparent: true,
       depthWrite: false,

@@ -21,31 +21,32 @@ export function buildSky() {
       void main(){
         vec3 d = normalize(vDir);
         float h = d.y;
-        vec3 zenith = vec3(0.012, 0.006, 0.03);
-        vec3 mid = vec3(0.08, 0.025, 0.12);
-        vec3 c = mix(uFogColor, mid, smoothstep(0.0, 0.18, h));
-        c = mix(c, zenith, smoothstep(0.15, 0.7, h));
-        // warm glow in the direction of downtown haze
-        c += vec3(0.12, 0.03, 0.06) * pow(max(0.0, 1.0 - abs(h) * 3.0), 3.0) * (0.6 + 0.4 * d.x);
-        // clouds
+        float sd = max(0.0, dot(d, uSunDir));
+        // dusk gradient: hazy orange horizon -> dusty amber -> smoky mauve-grey
+        vec3 band = vec3(0.62, 0.24, 0.08);
+        vec3 upper = vec3(0.16, 0.085, 0.07);
+        vec3 zenith = vec3(0.045, 0.04, 0.055);
+        vec3 c = mix(uFogColor, band, smoothstep(0.0, 0.1, h));
+        c = mix(c, upper, smoothstep(0.08, 0.35, h));
+        c = mix(c, zenith, smoothstep(0.3, 0.85, h));
+        // sun glow through the haze
+        c += uSunColor * (pow(sd, 6.0) * 0.35 + pow(sd, 40.0) * 0.5) * (1.0 - smoothstep(0.0, 0.6, h) * 0.6);
         if (h > 0.0) {
-          vec2 uv = d.xz / (h + 0.12) * 0.12;
-          float n1 = texture2D(uNoise, uv + vec2(uTime * 0.002, uTime * 0.001)).r;
-          float n2 = texture2D(uNoise, uv * 2.7 - vec2(uTime * 0.003, 0.0)).g;
-          float cl = smoothstep(0.38, 0.75, n1 * 0.7 + n2 * 0.45);
-          vec3 lit = mix(vec3(0.28, 0.07, 0.24), vec3(0.06, 0.12, 0.22), smoothstep(0.05, 0.5, h));
-          c = mix(c, lit, cl * smoothstep(0.0, 0.08, h) * 0.85);
-          // moon
-          vec3 md = normalize(vec3(-0.5, 0.42, -0.75));
-          float m = dot(d, md);
-          c += vec3(0.8, 0.85, 1.0) * smoothstep(0.9994, 0.9997, m) * (1.0 - cl * 0.7);
-          c += vec3(0.25, 0.2, 0.35) * pow(max(0.0, m), 300.0);
-          // sparse stars through gaps
-          vec2 sp = floor(d.xz / (h + 0.3) * 400.0);
-          float st = step(0.997, hash21(sp)) * (1.0 - cl) * smoothstep(0.3, 0.6, h);
-          c += vec3(st) * 0.6;
+          // stratified smoggy cloud deck lit from the low sun
+          vec2 uv = d.xz / (h + 0.1) * vec2(0.08, 0.2);
+          float n1 = texture2D(uNoise, uv + vec2(uTime * 0.0015, 0.0)).r;
+          float n2 = texture2D(uNoise, uv * 2.3 - vec2(uTime * 0.002, 0.0)).g;
+          float cl = smoothstep(0.32, 0.72, n1 * 0.75 + n2 * 0.4) * smoothstep(0.0, 0.06, h);
+          vec3 shadow = vec3(0.09, 0.05, 0.045);
+          vec3 lit = vec3(0.95, 0.45, 0.16) * (0.35 + pow(sd, 3.0) * 1.2);
+          float rimK = smoothstep(0.35, 0.8, n2) * (0.3 + pow(sd, 2.0));
+          vec3 cloudC = mix(shadow, lit, rimK) * (1.0 - smoothstep(0.1, 0.7, h) * 0.6);
+          c = mix(c, cloudC, cl * 0.85);
+          // sun disc, dimmed and reddened by smog
+          float disc = smoothstep(0.9990, 0.9994, dot(d, uSunDir));
+          c += vec3(1.3, 0.62, 0.3) * disc * (1.0 - cl * 0.8);
         } else {
-          c = mix(uFogColor, uFogColor * 0.6, smoothstep(0.0, -0.2, h));
+          c = mix(uFogColor, uFogColor * 0.75, smoothstep(0.0, -0.2, h));
         }
         gl_FragColor = vec4(c, 1.0);
         #include <colorspace_fragment>
@@ -65,7 +66,7 @@ export function buildSky() {
 
 // Low-lying smog layer between the street canyons and the upper city.
 export function buildSmog() {
-  const geo = new THREE.PlaneGeometry(3200, 3200);
+  const geo = new THREE.PlaneGeometry(3200, 3200, 40, 40);
   geo.rotateX(-Math.PI / 2);
   const mat = makeShaderMaterial({
     uniforms: { uNoise: { value: getNoiseTexture() } },
@@ -86,10 +87,10 @@ export function buildSmog() {
       void main(){
         float n = texture2D(uNoise, vW.xz / 900.0 + uTime * 0.003).r;
         float n2 = texture2D(uNoise, vW.xz / 300.0 - uTime * 0.004).g;
-        float a = smoothstep(0.25, 0.8, n * 0.8 + n2 * 0.4) * 0.45;
+        float a = smoothstep(0.25, 0.8, n * 0.8 + n2 * 0.4) * 0.35;
         float dc = distance(cameraPosition, vW);
         a *= smoothstep(15.0, 120.0, dc);
-        vec3 c = mix(vec3(0.35, 0.08, 0.3), vec3(0.1, 0.2, 0.35), n2);
+        vec3 c = mix(vec3(0.42, 0.2, 0.09), vec3(0.3, 0.17, 0.11), n2);
         gl_FragColor = vec4(mix(c, uFogColor, vFog * 0.6), a * (1.0 - vFog * 0.5));
         #include <colorspace_fragment>
       }`,
@@ -142,10 +143,10 @@ export function buildSkyline() {
         vec2 cell = floor(vec2(u / 3.0, y / 4.0));
         float lit = step(0.72, hash21(cell + id));
         vec3 wc = mix(vec3(1.0, 0.7, 0.4), vec3(0.5, 0.8, 1.0), hash21(cell * 1.3));
-        vec3 c = vec3(0.03, 0.02, 0.05) + wc * lit * 0.5 * inA;
+        vec3 c = vec3(0.05, 0.035, 0.03) + wc * lit * 0.25 * inA;
         float crown = step(h - 2.0, y) * inA;
-        c += vec3(1.0, 0.1, 0.4) * crown * step(0.6, hash11(id * 3.3));
-        float haze = 0.55 + 0.35 * (1.0 - smoothstep(0.0, 400.0, y));
+        c += vec3(0.6, 0.2, 0.1) * crown * step(0.6, hash11(id * 3.3));
+        float haze = 0.72 + 0.22 * (1.0 - smoothstep(0.0, 400.0, y));
         gl_FragColor = vec4(mix(c, uFogColor, haze), 1.0);
         #include <colorspace_fragment>
       }`,

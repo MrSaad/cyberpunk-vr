@@ -23,7 +23,7 @@ export function buildSkydeck(ctx) {
   b.boxMM(49.9, -1.0, -28, 50.05, -0.8, 28, col(NEON.green, 1.3), { emissive: true });
 
   // railings around the deck (platform side has an opening)
-  const railC = new THREE.Color(0.5, 0.85, 1.0);
+  const railC = new THREE.Color(0.62, 0.62, 0.6);
   const rail = (a0, a1, z0, z1) => {
     g.boxMM(a0, 0, z0, a1, 1.2, z1, railC);
     b.boxMM(a0 - 0.03, 1.2, z0 - 0.03, a1 + 0.03, 1.26, z1 + 0.03, col(NEON.green, 1.2), { emissive: true });
@@ -62,9 +62,9 @@ export function buildSkydeck(ctx) {
       const pa = a + r.float(-0.9, 0.9), pz = z + r.float(-0.9, 0.9);
       const h = r.float(1.6, 3.4);
       b.cylinder(pa, 0.6 + h / 2, pz, 0.05, 0.08, h, 0x1a1a22, { radial: 5 });
-      const fc = col(color, r.float(0.5, 0.9));
+      const fc = col(color, r.float(0.3, 0.55));
       b.sphere(pa, 0.6 + h, pz, r.float(0.5, 0.9), fc, { emissive: true, sy: 0.7, detail: 0 });
-      glow.sphere(pa, 0.6 + h, pz, 1.4, col(color, 0.08), { emissive: true, detail: 1 });
+      glow.sphere(pa, 0.6 + h, pz, 1.4, col(color, 0.035), { emissive: true, detail: 1 });
     }
     for (let i = 0; i < 6; i++) b.cone(a + r.float(-1.2, 1.2), 0.85, z + r.float(-1.2, 1.2), 0.18, 0.5, col(color, 0.6), { emissive: true, radial: 5 });
     ctx.blocker(a - 1.7, a + 1.7, z - 1.7, z + 1.7);
@@ -103,14 +103,14 @@ export function buildSkydeck(ctx) {
 
   // central hologram sculpture
   const rings = [];
-  const ringMat = (c) => new THREE.MeshBasicMaterial({ color: col(c, 0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const ringMat = (c) => new THREE.MeshBasicMaterial({ color: col(c, 0.45), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
   for (const [rad, c] of [[2.6, NEON.green], [2.0, NEON.cyan], [1.4, NEON.pink]]) {
     const m = new THREE.Mesh(new THREE.TorusGeometry(rad, 0.05, 6, 48), ringMat(c));
     m.position.copy(ctx.v(28, 5.5, 0));
     ctx.group.add(m);
     rings.push(m);
   }
-  const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 1), new THREE.MeshBasicMaterial({ color: col(NEON.green, 0.8), wireframe: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 1), new THREE.MeshBasicMaterial({ color: col(NEON.green, 0.4), wireframe: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   core.position.copy(ctx.v(28, 5.5, 0));
   ctx.group.add(core);
   b.cylinder(28, 0.3, 0, 1.4, 1.6, 0.6, 0x22202a, { radial: 20 });

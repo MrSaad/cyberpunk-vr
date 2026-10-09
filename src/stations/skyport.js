@@ -42,7 +42,7 @@ export function buildSkyport(ctx) {
     glow.cylinder(a, 0.6, z, 7.8, 7.8, 1.2, col(NEON.cyan, 0.05), { open: true, radial: 40 });
   }
   // deck edge railings
-  const railC = new THREE.Color(0.5, 0.85, 1.0);
+  const railC = new THREE.Color(0.62, 0.62, 0.6);
   const rail = (a0, a1, z0, z1) => {
     g.boxMM(a0, 0, z0, a1, 1.1, z1, railC);
     b.boxMM(a0 - 0.03, 1.1, z0 - 0.03, a1 + 0.03, 1.16, z1 + 0.03, col(NEON.cyan, 1.2), { emissive: true });
@@ -74,7 +74,7 @@ export function buildSkyport(ctx) {
   // control tower
   b.boxMM(54, 0, -28, 60, 6, -22, 0x24222c);
   b.boxMM(53.6, 6, -28.4, 60.4, 9, -21.6, 0x1a1822);
-  g.boxMM(53.5, 6.3, -28.5, 60.5, 8.7, -21.5, new THREE.Color(0.3, 0.9, 1.0));
+  g.boxMM(53.5, 6.3, -28.5, 60.5, 8.7, -21.5, new THREE.Color(0.62, 0.62, 0.6));
   b.boxMM(53.6, 9, -28.4, 60.4, 9.3, -21.6, col(NEON.cyan, 1.2), { emissive: true });
   b.box(57, 12, -25, 0.4, 6, 0.4, 0x2a2a35);
   ctx.halo(57, 15, -25, new THREE.Color(1, 0.05, 0.05), 2.5, 1);

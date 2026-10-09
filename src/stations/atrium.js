@@ -25,7 +25,7 @@ export function buildAtrium(ctx) {
   for (let z = -20; z <= 20; z += 5) b.boxMM(10.6, 0.01, z - 0.03, 59.8, 0.02, z + 0.03, col(RED, 0.45), { emissive: true });
   // ceiling with light panels
   b.boxMM(10, TOP, -25.4, 60.4, TOP + 0.6, 25.4, 0x141218);
-  for (let a = 15; a < 60; a += 7) for (let z = -20; z <= 20; z += 8) b.boxMM(a - 1.4, TOP - 0.05, z - 1.4, a + 1.4, TOP, z + 1.4, col(0xfff0f0, 1.0), { emissive: true });
+  for (let a = 15; a < 60; a += 7) for (let z = -20; z <= 20; z += 8) b.boxMM(a - 1.4, TOP - 0.05, z - 1.4, a + 1.4, TOP, z + 1.4, col(0xffe0c0, 0.55), { emissive: true });
   // walls
   b.boxMM(10, 0, -25.4, 10.4, TOP, -3, 0x1a1820);
   b.boxMM(10, 0, 3, 10.4, TOP, 25.4, 0x1a1820);
@@ -84,7 +84,7 @@ export function buildAtrium(ctx) {
   ctx.group.add(holo);
   const add = (geo, color, wire = false) => {
     const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
-      color: col(color, 0.9), wireframe: wire, transparent: true, opacity: 1,
+      color: col(color, 0.4), wireframe: wire, transparent: true, opacity: 1,
       blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
     }));
     holo.add(m);

@@ -47,7 +47,7 @@ export function makeCarMesh(body, neon) {
     else if (s === 1) c = new THREE.Color(0.02, 0.03, 0.06).addScalar(0.04 * l);
     else if (s === 2) c = new THREE.Color(2, 2, 1.8);
     else if (s === 3) c = new THREE.Color(2, 0.05, 0.1);
-    else if (s === 4) c = ne.clone().multiplyScalar(1.5);
+    else if (s === 4) c = ne.clone().multiplyScalar(0.7);
     else c = new THREE.Color(0.08, 0.08, 0.1).multiplyScalar(l * 1.5);
     colors.push(c.r, c.g, c.b);
   }
@@ -160,11 +160,11 @@ export function buildTraffic({ obstacles, route, stations }) {
         vec3 n = toWorld(normal, dir);
         float l = 0.35 + 0.45 * max(0.0, n.y) + 0.2 * abs(n.x);
         vec3 c;
-        if (aSlot < 0.5) c = aBody * l + aNeon * 0.05;
+        if (aSlot < 0.5) c = aBody * l + uSunColor * 0.05 * max(0.0, dot(n, uSunDir));
         else if (aSlot < 1.5) c = vec3(0.02, 0.03, 0.06) + 0.04 * l;
         else if (aSlot < 2.5) c = vec3(2.0, 2.0, 1.8);
         else if (aSlot < 3.5) c = vec3(2.0, 0.05, 0.1);
-        else if (aSlot < 4.5) c = aNeon * 1.5;
+        else if (aSlot < 4.5) c = desat(aNeon, 0.6) * 0.7;
         else c = vec3(0.08, 0.08, 0.1) * l * 1.5;
         vCol = c;
         vec4 mv = viewMatrix * vec4(p, 1.0);
@@ -214,7 +214,7 @@ export function buildTraffic({ obstacles, route, stations }) {
         float size = aOff.w * (1.0 + clamp(-mv.z / 500.0, 0.0, 1.0));
         mv.xy += position.xy * size * fade;
         vUv = position.xy;
-        vCol = aCol * (1.0 - fogAmount(-mv.z));
+        vCol = aCol * 0.75 * (1.0 - fogAmount(-mv.z));
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */ `

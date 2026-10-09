@@ -26,21 +26,21 @@ function glowTexture() {
 }
 
 function buildCarGeometry() {
-  const b = new MeshBuilder({ ambient: new THREE.Color(0.28, 0.26, 0.36), maxSeg: 1.2 });
+  const b = new MeshBuilder({ ambient: new THREE.Color(0.3, 0.27, 0.24), maxSeg: 1.2 });
   for (const z of [-12, -6, 0, 6, 12]) b.addLight(0, 2.5, z, 0xd8f4ff, 0.9, 3.2);
-  b.addLight(0, 1.0, 14, 0xff2a6d, 0.4, 3);
-  b.addLight(0, 1.0, -14, 0x00f0ff, 0.4, 3);
+  b.addLight(0, 1.0, 14, 0xd0607a, 0.4, 3);
+  b.addLight(0, 1.0, -14, 0x6fb3b8, 0.4, 3);
   const body = 0x22202c, hull = 0xd8d4e0, trim = 0x14121a;
   const gl = new MeshBuilder({ maxSeg: 1e9 });
 
   // underbody & floor
   b.boxMM(-HALF_W, -0.6, -HALF_L, HALF_W, -0.02, HALF_L, hull);
   b.boxMM(-HALF_W + 0.05, -0.04, -HALF_L + 0.05, HALF_W - 0.05, 0, HALF_L - 0.05, 0x2c2834);
-  b.boxMM(-HALF_W - 0.02, -0.5, -HALF_L, -HALF_W, -0.38, HALF_L, new THREE.Color(0x00f0ff).multiplyScalar(1.3), { emissive: true });
-  b.boxMM(HALF_W, -0.5, -HALF_L, HALF_W + 0.02, -0.38, HALF_L, new THREE.Color(0x00f0ff).multiplyScalar(1.3), { emissive: true });
+  b.boxMM(-HALF_W - 0.02, -0.5, -HALF_L, -HALF_W, -0.38, HALF_L, new THREE.Color(0x6fb3b8).multiplyScalar(1.3), { emissive: true });
+  b.boxMM(HALF_W, -0.5, -HALF_L, HALF_W + 0.02, -0.38, HALF_L, new THREE.Color(0x6fb3b8).multiplyScalar(1.3), { emissive: true });
   // aisle floor light strips
-  b.boxMM(-1.15, 0, -HALF_L + 0.5, -1.1, 0.01, HALF_L - 0.5, new THREE.Color(0xff2a6d).multiplyScalar(0.6), { emissive: true });
-  b.boxMM(1.1, 0, -HALF_L + 0.5, 1.15, 0.01, HALF_L - 0.5, new THREE.Color(0xff2a6d).multiplyScalar(0.6), { emissive: true });
+  b.boxMM(-1.15, 0, -HALF_L + 0.5, -1.1, 0.01, HALF_L - 0.5, new THREE.Color(0xd0607a).multiplyScalar(0.6), { emissive: true });
+  b.boxMM(1.1, 0, -HALF_L + 0.5, 1.15, 0.01, HALF_L - 0.5, new THREE.Color(0xd0607a).multiplyScalar(0.6), { emissive: true });
 
   // side walls with door openings
   const doorEdges = [];
@@ -60,7 +60,7 @@ function buildCarGeometry() {
         const pz = z0 + ((z1 - z0) * i) / n;
         b.box((xi + xo) / 2, 1.62, pz, 0.1, 1.7, 0.14, trim);
       }
-      gl.boxMM(xo - sx * 0.02, 0.78, z0, xo, 2.46, z1, new THREE.Color(0.5, 0.8, 1.0));
+      gl.boxMM(xo - sx * 0.02, 0.78, z0, xo, 2.46, z1, new THREE.Color(0.62, 0.62, 0.6));
     }
     // above doors
     for (const [a, c] of doorEdges) {
@@ -96,7 +96,7 @@ function buildCarGeometry() {
     b.boxMM(-HALF_W, 0, ze, HALF_W, 0.78, ze + sz * 0.08, body);
     b.boxMM(-HALF_W, 2.46, ze, HALF_W, 3.05, ze + sz * 0.08, hull);
     for (const x of [-1.74, 1.74]) b.box(x, 1.62, ze + sz * 0.04, 0.12, 1.7, 0.08, trim);
-    gl.boxMM(-HALF_W, 0.78, ze, HALF_W, 2.46, ze + sz * 0.02, new THREE.Color(0.5, 0.8, 1.0));
+    gl.boxMM(-HALF_W, 0.78, ze, HALF_W, 2.46, ze + sz * 0.02, new THREE.Color(0.62, 0.62, 0.6));
     // nose
     b.boxMM(-HALF_W, -0.6, ze, HALF_W, 0.7, ze + sz * 1.2, hull);
     b.boxMM(-HALF_W + 0.2, -0.6, ze + sz * 1.2, HALF_W - 0.2, 0.25, ze + sz * 2.3, hull);
@@ -228,9 +228,9 @@ export class Trains {
       if (tr.lastPanel !== undefined && Math.abs(t - tr.lastPanel) < 0.5) continue;
       tr.lastPanel = t;
       const lines = st.docked
-        ? [{ text: `NOW ▸ ${st.docked.name}`, color: '#fcee0a', size: 44 }, { text: `NEXT ▸ ${st.next.name}`, color: '#00f0ff', size: 34 }]
-        : [{ text: `NEXT ▸ ${st.next.name}`, color: '#fcee0a', size: 44 }, { text: `${Math.round(st.speed * 3.6)} km/h · ${Math.ceil(st.arriveIn)}s`, color: '#ff2a6d', size: 34 }];
-      tr.panel.draw(lines, { accent: '#ff2a6d' });
+        ? [{ text: `NOW ▸ ${st.docked.name}`, color: '#e0a84e', size: 44 }, { text: `NEXT ▸ ${st.next.name}`, color: '#6fb3b8', size: 34 }]
+        : [{ text: `NEXT ▸ ${st.next.name}`, color: '#e0a84e', size: 44 }, { text: `${Math.round(st.speed * 3.6)} km/h · ${Math.ceil(st.arriveIn)}s`, color: '#d0607a', size: 34 }];
+      tr.panel.draw(lines, { accent: '#d0607a' });
     }
   }
 }

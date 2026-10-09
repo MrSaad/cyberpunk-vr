@@ -147,7 +147,7 @@ export class TextPanel {
     this.texture.anisotropy = 4;
     this.last = '';
   }
-  draw(lines, { accent = '#fcee0a', bg = '#0a0414' } = {}) {
+  draw(lines, { accent = '#e0a84e', bg = '#0d0a08' } = {}) {
     const key = JSON.stringify(lines) + accent;
     if (key === this.last) return;
     this.last = key;

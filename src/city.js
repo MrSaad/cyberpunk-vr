@@ -62,15 +62,18 @@ const BUILDING_FRAG = /* glsl */ `
     vec3 n = normalize(vN);
     float seed = vStyle.y;
     float style = vStyle.x;
-    vec3 accent = uAccents[int(vStyle.w + 0.5)];
-    vec3 wall = vec3(0.022, 0.02, 0.036) + hash11(seed * 31.0) * vec3(0.02, 0.016, 0.03);
-    if (style > 3.5) wall = vec3(0.05, 0.012, 0.016); // corporate red-black
+    vec3 accent = desat(uAccents[int(vStyle.w + 0.5)], 0.7) * 0.75;
+    // weathered concrete / dark glass, warmed by the hazy dusk light
+    vec3 wall = vec3(0.045, 0.038, 0.034) + hash11(seed * 31.0) * vec3(0.03, 0.025, 0.02);
+    if (style > 3.5) wall = vec3(0.05, 0.022, 0.018); // corporate
+    float sunL = max(0.0, dot(n, uSunDir));
+    wall += uSunColor * (sunL * 0.07 + 0.012) * smoothstep(-40.0, 250.0, vW.y);
     vec3 c;
     if (abs(n.y) > 0.5) {
-      c = wall * (n.y > 0.0 ? 0.9 : 0.4);
+      c = wall * (n.y > 0.0 ? 1.1 : 0.4) + uSunColor * 0.015 * step(0.0, n.y);
       // rooftop light grid hint
       vec2 r = fract(vW.xz / 6.0);
-      c += accent * 0.05 * step(0.94, max(r.x, r.y));
+      c += accent * 0.02 * step(0.94, max(r.x, r.y));
     } else {
 #ifdef CYLINDER
       float u = atan(vL.z, vL.x) * vSize.x * 0.5;
@@ -94,13 +97,14 @@ const BUILDING_FRAG = /* glsl */ `
       float lit = step(r, vStyle.z);
       float flipT = floor(uTime * 0.04 + r * 7.0);
       lit = abs(lit - step(0.985, hash21(id * 1.3 + flipT)));
-      vec3 wc = mix(vec3(1.0, 0.68, 0.38), vec3(0.55, 0.75, 1.0), step(0.55, hash21(id * 1.7 + seed)));
-      wc = mix(wc, accent, step(0.92, hash21(id * 2.3 + seed)));
-      wc *= 0.35 + 0.75 * hash21(id * 3.1 + 0.5);
-      vec3 glass = vec3(0.02, 0.025, 0.05) + accent * 0.015;
+      // mostly sodium/tungsten interiors, some pale fluorescent
+      vec3 wc = mix(vec3(1.0, 0.62, 0.3), vec3(0.75, 0.78, 0.7), step(0.7, hash21(id * 1.7 + seed)));
+      wc = mix(wc, accent, step(0.95, hash21(id * 2.3 + seed)));
+      wc *= 0.2 + 0.5 * hash21(id * 3.1 + 0.5);
+      vec3 glass = vec3(0.025, 0.024, 0.026) + uSunColor * sunL * 0.05;
       vec3 nearC = mix(wall, mix(glass, wc, lit), win);
       float area = (1.0 - 2.0 * fx) * 0.64;
-      vec3 avgWin = vec3(0.62, 0.58, 0.55) * 0.85;
+      vec3 avgWin = vec3(0.62, 0.42, 0.24) * 0.4;
       vec3 farC = wall * (1.0 - area) + area * (glass * (1.0 - vStyle.z) + avgWin * vStyle.z);
       c = mix(farC, nearC, detail);
 
@@ -109,22 +113,22 @@ const BUILDING_FRAG = /* glsl */ `
         float bv = abs(fract(v / (floorH * 4.0)) - 0.5) * floorH * 4.0;
         float bw = fwidth(v);
         float band = 1.0 - smoothstep(0.15, 0.15 + bw * 1.5, bv);
-        c = mix(c, accent * 1.1, mix(0.08, band, detail));
+        c = mix(c, accent * 0.8, mix(0.04, band * 0.8, detail));
       } else if (style > 1.5 && style < 2.5) {
         float su = abs(fract(u / 7.0) - 0.5) * 7.0;
         float bw = fwidth(u);
         float stripe = 1.0 - smoothstep(0.18, 0.18 + bw * 1.5, su);
         float pulse = 0.6 + 0.4 * sin(v * 0.05 - uTime * 2.0 + seed * 10.0);
-        c = mix(c, accent * pulse, mix(0.07, stripe, detail));
+        c = mix(c, accent * pulse * 0.7, mix(0.03, stripe * 0.7, detail));
       } else if (style > 3.5) {
         float bv = abs(fract(v / 18.0) - 0.5) * 18.0;
         float band = 1.0 - smoothstep(0.25, 0.25 + fwidth(v) * 1.5, bv);
-        c = mix(c, vec3(1.0, 0.06, 0.1), mix(0.06, band, detail));
+        c = mix(c, vec3(0.6, 0.12, 0.08), mix(0.04, band * 0.8, detail));
       }
       // street-level shopfronts
       if (v < 6.5) {
         float shop = floor(u / 9.0);
-        vec3 sc = uAccents[int(mod(shop + seed * 5.0, 8.0))];
+        vec3 sc = desat(uAccents[int(mod(shop + seed * 5.0, 8.0))], 0.6);
         float fu = fract(u / 9.0);
         float frame = step(0.06, fu) * step(fu, 0.94);
         float fv = fract(u / 1.5);
@@ -134,9 +138,9 @@ const BUILDING_FRAG = /* glsl */ `
       }
       // glowing crown near the top of some towers
       float topDist = vSize.y * 0.5 - vL.y * vSize.y;
-      if (hash11(seed * 3.3) > 0.55) c = mix(c, accent, (1.0 - smoothstep(0.4, 0.9, topDist)) * 0.9);
+      if (hash11(seed * 3.3) > 0.7) c = mix(c, accent, (1.0 - smoothstep(0.4, 0.9, topDist)) * 0.5);
       // low smog glow
-      c += vec3(0.05, 0.015, 0.06) * (1.0 - smoothstep(0.0, 90.0, v));
+      c += vec3(0.05, 0.025, 0.012) * (1.0 - smoothstep(0.0, 90.0, v));
     }
     gl_FragColor = vec4(mix(c, uFogColor, vFog), 1.0);
     #include <colorspace_fragment>
@@ -192,7 +196,7 @@ export class BuildingSet {
 // Ground with streets, lamps and street-level traffic light streaks.
 // ---------------------------------------------------------------------------
 function buildGround() {
-  const geo = new THREE.PlaneGeometry(6000, 6000, 1, 1);
+  const geo = new THREE.PlaneGeometry(6000, 6000, 60, 60);
   geo.rotateX(-Math.PI / 2);
   const mat = makeShaderMaterial({
     vertexShader: /* glsl */ `
@@ -235,18 +239,18 @@ function buildGround() {
         vec2 w = vW.xz;
         vec2 g = mod(w + P * 0.5, P) - P * 0.5;
         vec2 lineId = floor((w + P * 0.5) / P);
-        vec3 c = vec3(0.028, 0.026, 0.04);
+        vec3 c = vec3(0.04, 0.034, 0.03);
         float sx = step(abs(g.x), HS), sz = step(abs(g.y), HS);
         float side = (step(abs(g.x), HS + 4.0) + step(abs(g.y), HS + 4.0));
         c = mix(c, vec3(0.06, 0.055, 0.075), min(1.0, side));
         if (sx + sz > 0.0) {
           c = vec3(0.018, 0.018, 0.026);
           // wet sheen: faint neon tint varying across the street
-          c += vec3(0.04, 0.0, 0.05) * (0.5 + 0.5 * sin(w.x * 0.05 + w.y * 0.03));
+          c += vec3(0.04, 0.022, 0.01) * (0.5 + 0.5 * sin(w.x * 0.05 + w.y * 0.03));
           if (sx > 0.0) c += streetAlong(g.x, w.y, lineId.x);
           if (sz > 0.0) c += streetAlong(-g.y, -w.x, lineId.y + 50.0);
         }
-        c += vec3(0.08, 0.03, 0.09) * 0.4;
+        c += vec3(0.06, 0.035, 0.02) * 0.4;
         gl_FragColor = vec4(mix(c, uFogColor, vFog), 1.0);
         #include <colorspace_fragment>
       }`,
@@ -263,7 +267,7 @@ export function buildCity({ route, zones, buildings, signs, screens, halos, peop
   const rng = new RNG(20770);
   const group = new THREE.Group();
   const trims = new MeshBuilder({ maxSeg: 1000 });
-  const props = new MeshBuilder({ ambient: new THREE.Color(0.55, 0.45, 0.7), maxSeg: 1000 });
+  const props = new MeshBuilder({ ambient: new THREE.Color(0.6, 0.48, 0.4), maxSeg: 1000 });
 
   // spatial hash of track samples
   const grid = new Map();
@@ -425,7 +429,7 @@ export function buildCity({ route, zones, buildings, signs, screens, halos, peop
 
         // neon trims on corners + roof rims
         const top = tiers[tiers.length - 1];
-        const accent = NEON_LIST[style[3]];
+        const accent = NEON_LIST[style[3]].clone().multiplyScalar(0.55);
         if (!top.cyl && rng.chance(style[0] === 1 || style[0] === 2 ? 0.45 : 0.15)) {
           const hw = top.w / 2 + 0.2, hd = top.d / 2 + 0.2;
           const th = top.y1 - top.y0;

@@ -18,12 +18,12 @@ export const TRAIN_COUNT = 4;
 // Order around the loop (counter-clockwise). `side` is which side of the
 // track the platform is on: 'in' = toward downtown, 'out' = away from it.
 export const STATION_DEFS = [
-  { id: 'home', name: 'HOME', cell: 0, height: 170, angle: 0, side: 'in', accent: '#ff2a6d' },
-  { id: 'skydeck', name: 'SKYDECK', cell: 1, height: 205, angle: 60, side: 'in', accent: '#05ffa1' },
-  { id: 'skyport', name: 'SKYPORT', cell: 2, height: 140, angle: 120, side: 'out', accent: '#00f0ff' },
-  { id: 'atrium', name: 'KUROGANE TOWER', cell: 3, height: 62, angle: 180, side: 'in', accent: '#ff1744' },
-  { id: 'market', name: 'NIGHT MARKET', cell: 4, height: 14, angle: 240, side: 'out', accent: '#fcee0a' },
-  { id: 'cafe', name: 'KAFE 22', cell: 5, height: 96, angle: 300, side: 'out', accent: '#b026ff' },
+  { id: 'home', name: 'HOME', cell: 0, height: 170, angle: 0, side: 'in', accent: '#d0607a' },
+  { id: 'skydeck', name: 'SKYDECK', cell: 1, height: 205, angle: 60, side: 'in', accent: '#8ab89a' },
+  { id: 'skyport', name: 'SKYPORT', cell: 2, height: 140, angle: 120, side: 'out', accent: '#6fb3b8' },
+  { id: 'atrium', name: 'KUROGANE TOWER', cell: 3, height: 62, angle: 180, side: 'in', accent: '#d04a32' },
+  { id: 'market', name: 'NIGHT MARKET', cell: 4, height: 14, angle: 240, side: 'out', accent: '#e0a84e' },
+  { id: 'cafe', name: 'KAFE 22', cell: 5, height: 96, angle: 300, side: 'out', accent: '#9a7aa8' },
 ];
 
 export class Route {

@@ -84,7 +84,7 @@ export function buildExtras({ scene, buildings, stations }) {
   const kois = [];
   const centre = picks[0] || { x: 0, z: 0, top: 300 };
   for (let i = 0; i < 3; i++) {
-    const m = new THREE.Mesh(koiGeo, koiMat(i === 1 ? 0x30c0ff : 0xff7a20));
+    const m = new THREE.Mesh(koiGeo, koiMat(i === 1 ? 0x4a7a80 : 0xa05a28));
     m.scale.setScalar(70 - i * 12);
     m.frustumCulled = false;
     m.renderOrder = 4;
@@ -120,7 +120,7 @@ export function buildExtras({ scene, buildings, stations }) {
       void main(){
         float edge = pow(abs(dot(normalize(vN), vV)), 2.0);
         float a = (1.0 - vH) * (1.0 - vH) * edge * 0.12;
-        gl_FragColor = vec4(vec3(0.75, 0.8, 1.0) * a, 1.0);
+        gl_FragColor = vec4(vec3(1.0, 0.85, 0.65) * a * 0.6, 1.0);
         #include <colorspace_fragment>
       }`,
     transparent: true,
@@ -145,7 +145,7 @@ export function buildExtras({ scene, buildings, stations }) {
   });
 
   // --- holo crowns on tall towers ---
-  const crownMat = (c) => new THREE.MeshBasicMaterial({ color: col(c, 0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const crownMat = (c) => new THREE.MeshBasicMaterial({ color: col(c, 0.45), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
   const crowns = [];
   for (let i = 0; i < Math.min(picks.length, 5); i++) {
     const p = picks[i];
@@ -176,12 +176,12 @@ export function buildExtras({ scene, buildings, stations }) {
   tickerCanvas.width = 2048;
   tickerCanvas.height = 256;
   const ctx = tickerCanvas.getContext('2d');
-  ctx.fillStyle = '#05010a';
+  ctx.fillStyle = '#0a0705';
   ctx.fillRect(0, 0, 2048, 256);
   ctx.font = '900 150px "Arial Black", "Roboto", sans-serif';
   ctx.textBaseline = 'middle';
   ctx.shadowBlur = 20;
-  const msgs = [['KAIJU COLA', '#fcee0a'], ['DRINK THE FUTURE', '#ff2a6d'], ['NEOTEK', '#00f0ff']];
+  const msgs = [['KAIJU COLA', '#e0a84e'], ['DRINK THE FUTURE', '#d0607a'], ['NEOTEK', '#6fb3b8']];
   let x = 40;
   for (const [m, c] of msgs) {
     ctx.fillStyle = c;
@@ -204,7 +204,7 @@ export function buildExtras({ scene, buildings, stations }) {
       pl.rotation.y = s * Math.PI / 2;
       g.add(pl);
     }
-    for (const [px, py, pz, c] of [[0, -18, 0, 0xff2a6d], [0, 0, 70, 0xffffff], [0, 0, -70, 0xff1020]]) {
+    for (const [px, py, pz, c] of [[0, -18, 0, 0xd0607a], [0, 0, 70, 0xffffff], [0, 0, -70, 0xff1020]]) {
       const l = new THREE.Mesh(new THREE.SphereGeometry(1.2, 8, 6), new THREE.MeshBasicMaterial({ color: c }));
       l.position.set(px, py, pz);
       g.add(l);

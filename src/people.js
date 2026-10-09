@@ -158,13 +158,13 @@ export class People {
           if (s < 0.5) c = skin;
           else if (s < 1.5) c = aCol1;
           else if (s < 2.5) c = aCol2;
-          else if (s < 3.5) { c = aCol3 * 1.4; glow = true; }
+          else if (s < 3.5) { c = desat(aCol3, 0.7) * 0.8; glow = true; }
           else if (s < 4.5) c = vec3(0.03);
           else if (s < 5.5) { float hh = hash11(phase * 31.0); c = hh > 0.75 ? aCol3 * 0.9 : mix(vec3(0.02), vec3(0.35, 0.22, 0.1), hh); }
-          else { if (aC.w > 0.5) { c = aCol3 * 1.6; glow = true; } else c = skin; }
+          else { if (aC.w > 0.5) { c = desat(aCol3, 0.7) * 0.9; glow = true; } else c = skin; }
           if (!glow) {
             float l = 0.32 + 0.4 * max(0.0, wn.y) + 0.35 * max(0.0, dot(wn, normalize(vec3(0.4, 0.3, 0.8))));
-            c = c * l + aCol3 * 0.12 * (1.0 - abs(wn.y));
+            c = c * l + uSunColor * 0.06 * (1.0 - abs(wn.y));
           }
           vCol = c;
           vec4 mv = viewMatrix * world;

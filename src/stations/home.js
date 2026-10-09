@@ -12,44 +12,44 @@ export function buildHome(ctx) {
 
   // --- lights (baked) ---
   for (const a of [15, 22, 29]) for (const z of [-10, 0, 10]) ctx.light(a, 4.2, z, 0xffd2a0, 0.55, 4.5);
-  ctx.light(36, 2.5, 0, 0xc040ff, 0.7, 14);
-  ctx.light(36, 2.5, -12, 0xff2a6d, 0.5, 10);
-  ctx.light(36, 2.5, 12, 0x00f0ff, 0.5, 10);
-  ctx.light(25.3, 0.3, -12.5, 0xb026ff, 0.9, 2.5);
-  ctx.light(11.2, 1.8, -8, 0x00f0ff, 0.6, 4);
-  ctx.light(16, 0.5, 8, 0xff2a6d, 0.6, 3);
-  ctx.light(27.2, 1.2, -2, 0x00f0ff, 0.5, 3);
+  ctx.light(38, 2.0, 0, 0xff8040, 0.9, 16);
+  ctx.light(36, 2.5, -12, 0xd0607a, 0.5, 10);
+  ctx.light(36, 2.5, 12, 0x6fb3b8, 0.5, 10);
+  ctx.light(25.3, 0.3, -12.5, 0x9a7aa8, 0.9, 2.5);
+  ctx.light(11.2, 1.8, -8, 0x6fb3b8, 0.6, 4);
+  ctx.light(16, 0.5, 8, 0xd0607a, 0.6, 3);
+  ctx.light(27.2, 1.2, -2, 0x6fb3b8, 0.5, 3);
 
   buildPlatform(ctx, { openings: [[-1.2, 1.2]], accent: NEON.magenta });
 
   // --- shell ---
-  b.boxMM(10, -0.4, -15, 34, 0, 15, 0x221d28);
-  b.boxMM(10.4, 0, -14.6, 33.6, 0.01, 14.6, 0x2c2530);
-  b.boxMM(10, CEIL, -15, 34, CEIL + 0.5, 15, 0x26222e);
+  b.boxMM(10, -0.4, -15, 34, 0, 15, 0x2a221c);
+  b.boxMM(10.4, 0, -14.6, 33.6, 0.01, 14.6, 0x3a2e26);
+  b.boxMM(10, CEIL, -15, 34, CEIL + 0.5, 15, 0x2e2620);
   // perimeter cove lighting
-  b.boxMM(33.4, CEIL - 0.06, -14.6, 33.5, CEIL, 14.6, col(0xffc890, 0.55), { emissive: true });
-  b.boxMM(16, CEIL - 0.08, 14.2, 33.5, CEIL, 14.5, col(0xffc890, 0.55), { emissive: true });
-  b.boxMM(16, CEIL - 0.08, -14.5, 33.5, CEIL, -14.2, col(0xffc890, 0.55), { emissive: true });
+  b.boxMM(33.4, CEIL - 0.06, -14.6, 33.5, CEIL, 14.6, col(0xffc890, 0.3), { emissive: true });
+  b.boxMM(16, CEIL - 0.08, 14.2, 33.5, CEIL, 14.5, col(0xffc890, 0.3), { emissive: true });
+  b.boxMM(16, CEIL - 0.08, -14.5, 33.5, CEIL, -14.2, col(0xffc890, 0.3), { emissive: true });
   // platform-side wall with door
-  b.boxMM(10, 0, -15, 10.4, CEIL, -1.2, 0x3a3440);
-  b.boxMM(10, 0, 1.2, 10.4, CEIL, 15, 0x3a3440);
-  b.boxMM(10, 2.6, -1.2, 10.4, CEIL, 1.2, 0x3a3440);
+  b.boxMM(10, 0, -15, 10.4, CEIL, -1.2, 0x4a4038);
+  b.boxMM(10, 0, 1.2, 10.4, CEIL, 15, 0x4a4038);
+  b.boxMM(10, 2.6, -1.2, 10.4, CEIL, 1.2, 0x4a4038);
   autoDoor(ctx, 10.2, -1.2, 1.2, 2.6, NEON.cyan);
   // side walls: solid near the entrance, glass toward the view
-  b.boxMM(10.4, 0, 14.6, 16, CEIL, 15, 0x3a3440);
-  b.boxMM(10.4, 0, -15, 16, CEIL, -14.6, 0x3a3440);
+  b.boxMM(10.4, 0, 14.6, 16, CEIL, 15, 0x4a4038);
+  b.boxMM(10.4, 0, -15, 16, CEIL, -14.6, 0x4a4038);
   glassWallA(ctx, 33.8, -15, 15, 0, CEIL, 3);
   glassWallZ(ctx, 14.8, 16, 34, 0, CEIL, 3);
   glassWallZ(ctx, -14.8, 16, 34, 0, CEIL, 3);
 
   // --- living area (couch faces the windows) ---
-  b.boxMM(26.2, 0.01, -7.5, 31.8, 0.03, 3.5, 0x3a1f4a);
-  b.boxMM(24.0, 0, -6, 25.3, 0.42, 2, 0x221b2b);
-  b.boxMM(24.1, 0.42, -5.9, 25.2, 0.55, 1.9, 0x5a3478);
-  b.boxMM(23.8, 0, -6, 24.3, 1.05, 2, 0x4a2a66);
-  b.boxMM(24.0, 0, 2, 27.0, 0.42, 3.2, 0x221b2b);
-  b.boxMM(24.1, 0.42, 2.1, 26.9, 0.55, 3.1, 0x5a3478);
-  b.boxMM(23.8, 0, 3.0, 27.0, 1.05, 3.4, 0x4a2a66);
+  b.boxMM(26.2, 0.01, -7.5, 31.8, 0.03, 3.5, 0x4a3324);
+  b.boxMM(24.0, 0, -6, 25.3, 0.42, 2, 0x241c18);
+  b.boxMM(24.1, 0.42, -5.9, 25.2, 0.55, 1.9, 0x6a4a34);
+  b.boxMM(23.8, 0, -6, 24.3, 1.05, 2, 0x553a28);
+  b.boxMM(24.0, 0, 2, 27.0, 0.42, 3.2, 0x241c18);
+  b.boxMM(24.1, 0.42, 2.1, 26.9, 0.55, 3.1, 0x6a4a34);
+  b.boxMM(23.8, 0, 3.0, 27.0, 1.05, 3.4, 0x553a28);
   b.boxMM(24.0, 0.02, -6, 24.05, 0.05, 3.2, col(NEON.purple, 1.3), { emissive: true });
   ctx.blocker(23.7, 25.4, -6.1, 2.1);
   ctx.blocker(23.7, 27.1, 1.9, 3.5);
@@ -69,25 +69,25 @@ export function buildHome(ctx) {
   ctx.updaters.push((t) => { holo.rotation.y = t * 0.6; holo.rotation.x = Math.sin(t * 0.4) * 0.4; });
 
   // --- media wall ---
-  b.boxMM(10.4, 0, -11, 11.0, 0.5, -5, 0x16141c);
+  b.boxMM(10.4, 0, -11, 11.0, 0.5, -5, 0x1c1814);
   b.boxMM(11.0, 0.05, -11, 11.02, 0.1, -5, col(NEON.cyan, 1.2), { emissive: true });
   ctx.blocker(10.3, 11.1, -11.1, -4.9);
   ctx.screen(10.45, 2.1, -8, Math.PI / 2, 4.6, 2.6, 6 + 3, NEON.cyan, NEON.pink);
 
   // --- kitchen ---
-  b.boxMM(10.4, 0, 4, 11.1, 0.92, 13, 0x1c1a22);
+  b.boxMM(10.4, 0, 4, 11.1, 0.92, 13, 0x241e1a);
   b.boxMM(10.4, 0.92, 4, 11.15, 0.97, 13, 0xd8d0e0);
-  b.boxMM(10.4, 1.7, 4, 10.8, 2.6, 13, 0x24202c);
+  b.boxMM(10.4, 1.7, 4, 10.8, 2.6, 13, 0x2e2620);
   b.boxMM(10.8, 1.68, 4, 10.82, 1.7, 13, col(0xffffff, 1.0), { emissive: true });
   b.boxMM(10.4, 0, 13, 11.3, 2.3, 14.6, 0x8a8a98);
   ctx.blocker(10.3, 11.4, 3.9, 14.7);
-  b.boxMM(14, 0, 7, 18, 0.9, 9, 0x1c1a22);
+  b.boxMM(14, 0, 7, 18, 0.9, 9, 0x241e1a);
   b.boxMM(13.9, 0.9, 6.9, 18.1, 0.96, 9.1, 0xe8e0f0);
   b.boxMM(14, 0.04, 6.95, 18, 0.08, 6.97, col(NEON.magenta, 1.3), { emissive: true });
   ctx.blocker(13.8, 18.2, 6.8, 9.2);
   for (const a of [14.8, 16, 17.2]) {
     b.cylinder(a, 0.35, 6.2, 0.04, 0.04, 0.7, 0x9a9aa8, { radial: 6 });
-    b.cylinder(a, 0.72, 6.2, 0.22, 0.22, 0.06, 0x4a2a66, { radial: 12 });
+    b.cylinder(a, 0.72, 6.2, 0.22, 0.22, 0.06, 0x553a28, { radial: 12 });
   }
   // pendant lamps over the island
   for (const a of [14.8, 17.2]) {
@@ -97,10 +97,10 @@ export function buildHome(ctx) {
   }
 
   // --- bedroom nook behind a partition ---
-  b.boxMM(23.8, 0, -15, 24.1, 3.0, -8.5, 0x3a3440);
-  b.boxMM(24.1, 0, -13.8, 26.6, 0.5, -11.2, 0x1a1720);
+  b.boxMM(23.8, 0, -15, 24.1, 3.0, -8.5, 0x4a4038);
+  b.boxMM(24.1, 0, -13.8, 26.6, 0.5, -11.2, 0x1e1915);
   b.boxMM(24.2, 0.5, -13.7, 26.5, 0.68, -11.3, 0xcac0d8);
-  b.boxMM(24.1, 0, -13.8, 24.4, 1.2, -11.2, 0x2a2232);
+  b.boxMM(24.1, 0, -13.8, 24.4, 1.2, -11.2, 0x3a2c22);
   b.boxMM(24.1, 0.02, -13.82, 26.6, 0.06, -13.8, col(NEON.purple, 1.4), { emissive: true });
   ctx.blocker(23.7, 26.7, -15, -11.1);
   ctx.blocker(23.7, 24.2, -15, -8.4);

@@ -80,7 +80,8 @@ export class Signs {
           }
           vec2 e = min(vUv, 1.0 - vUv) * vec2(vAspect, 1.0);
           float border = 1.0 - smoothstep(0.02, 0.05, min(e.x, e.y));
-          vec3 c = vB + vA * (m * 1.7 + border * 1.1) * k;
+          vec3 A = desat(vA, 0.75);
+          vec3 c = vB + A * (m * 1.15 + border * 0.45) * k;
           gl_FragColor = vec4(mix(c, uFogColor, vFog), 1.0);
           #include <colorspace_fragment>
         }`,
@@ -169,7 +170,8 @@ export class Screens {
           c += g * vec3(0.3, 0.0, 0.4);
           vec2 e = min(vUv, 1.0 - vUv) * vec2(vAspect, 1.0);
           c *= smoothstep(0.01, 0.025, min(e.x, e.y));
-          gl_FragColor = vec4(mix(c * 0.95, uFogColor, vFog), 1.0);
+          c = desat(c, 0.65) * 0.62;
+          gl_FragColor = vec4(mix(c, uFogColor, vFog), 1.0);
           #include <colorspace_fragment>
         }`,
     });

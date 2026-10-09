@@ -19,7 +19,7 @@ export class StationContext {
     this.group.updateMatrixWorld(true);
     this.yaw = new THREE.Euler().setFromQuaternion(station.quaternion, 'YXZ').y;
     this.H = station.position.y;
-    const amb = new THREE.Color(0.2, 0.17, 0.27);
+    const amb = new THREE.Color(0.24, 0.2, 0.17);
     this.solid = new MeshBuilder({ ambient: amb, maxSeg: 1.6 });
     this.solid.mirrorX = this.side;
     this.glass = new MeshBuilder({ maxSeg: 1e9 });
@@ -115,7 +115,7 @@ export function buildPlatform(ctx, { openings = [], accent = NEON.magenta, suppo
   const { solid: b, glass: g } = ctx;
   const st = ctx.st;
   const A0 = 1.95, A1 = 9.95, Z = 22;
-  const acc = new THREE.Color(accent);
+  const acc = new THREE.Color(accent).multiplyScalar(0.55);
   // lights must exist before geometry: they are baked into vertex colours
   for (let zz = -Z + 2; zz <= Z - 2; zz += 8) ctx.light(5.8, 3.2, zz, 0xfff0e0, 0.9, 5);
   ctx.light(2.3, 2.5, 0, accent, 0.5, 8);
@@ -134,7 +134,7 @@ export function buildPlatform(ctx, { openings = [], accent = NEON.magenta, suppo
   for (const [a, c] of gaps) { spans.push([z, a]); z = c; }
   spans.push([z, Z - 0.5]);
   for (const [z0, z1] of spans) {
-    g.boxMM(2.06, 0, z0, 2.1, 2.1, z1, new THREE.Color(0.55, 0.85, 1.0));
+    g.boxMM(2.06, 0, z0, 2.1, 2.1, z1, new THREE.Color(0.62, 0.62, 0.6));
     b.boxMM(2.03, 2.1, z0, 2.13, 2.2, z1, 0x24222c);
   }
   for (const [a, c] of gaps) {
@@ -188,14 +188,14 @@ export function buildPlatform(ctx, { openings = [], accent = NEON.magenta, suppo
   rail.push([zr, Z]);
   for (const [z0, z1] of rail) {
     if (z1 - z0 < 0.05) continue;
-    g.boxMM(9.85, 0, z0, 9.9, 1.1, z1, new THREE.Color(0.5, 0.8, 1.0));
+    g.boxMM(9.85, 0, z0, 9.9, 1.1, z1, new THREE.Color(0.62, 0.62, 0.6));
     b.boxMM(9.82, 1.1, z0, 9.93, 1.16, z1, acc.clone().multiplyScalar(1.1), { emissive: true });
   }
   for (const zz of [-Z, Z]) {
     const segs = zz > 0 && endGap ? [[A0, endGap[0]], [endGap[1], A1]] : [[A0, A1]];
     for (const [s0, s1] of segs) {
       if (s1 - s0 < 0.05) continue;
-      g.boxMM(s0, 0, zz - 0.03, s1, 1.1, zz + 0.03, new THREE.Color(0.5, 0.8, 1.0));
+      g.boxMM(s0, 0, zz - 0.03, s1, 1.1, zz + 0.03, new THREE.Color(0.62, 0.62, 0.6));
       b.boxMM(s0, 1.1, zz - 0.05, s1, 1.16, zz + 0.05, acc.clone().multiplyScalar(1.1), { emissive: true });
     }
   }
@@ -255,12 +255,12 @@ export function buildPlatform(ctx, { openings = [], accent = NEON.magenta, suppo
     lastBoard = t;
     const s = ctx.env.route.stationStatus(st, t);
     const lines = s.boarding != null
-      ? [{ text: 'SKYTRAIN · LOOP', color: accent instanceof THREE.Color ? '#fcee0a' : '#' + new THREE.Color(accent).getHexString(), size: 34 },
+      ? [{ text: 'SKYTRAIN · LOOP', color: accent instanceof THREE.Color ? '#e0a84e' : '#' + new THREE.Color(accent).getHexString(), size: 34 },
          { text: `▸ ${s.next.name}`, color: '#ffffff', size: 40 },
-         { text: `BOARDING · ${Math.ceil(s.boarding)}s`, color: '#05ffa1', size: 34 }]
+         { text: `BOARDING · ${Math.ceil(s.boarding)}s`, color: '#8ab89a', size: 34 }]
       : [{ text: 'SKYTRAIN · LOOP', color: '#' + new THREE.Color(accent).getHexString(), size: 34 },
          { text: `▸ ${s.next.name}`, color: '#ffffff', size: 40 },
-         { text: `NEXT TRAIN ${fmt(s.wait)}`, color: '#fcee0a', size: 34 }];
+         { text: `NEXT TRAIN ${fmt(s.wait)}`, color: '#e0a84e', size: 34 }];
     for (const p of boards) p.draw(lines, { accent: '#' + new THREE.Color(accent).getHexString() });
   });
 }
@@ -272,7 +272,7 @@ function fmt(s) {
 
 // Glass wall helper with mullions (a-axis wall at fixed a, spanning z)
 export function glassWallA(ctx, a, z0, z1, y0, y1, mullion = 3, frame = 0x1a1820) {
-  ctx.glass.boxMM(a - 0.02, y0, z0, a + 0.02, y1, z1, new THREE.Color(0.45, 0.7, 0.95));
+  ctx.glass.boxMM(a - 0.02, y0, z0, a + 0.02, y1, z1, new THREE.Color(0.6, 0.62, 0.6));
   const n = Math.max(1, Math.round((z1 - z0) / mullion));
   for (let i = 0; i <= n; i++) {
     const z = z0 + ((z1 - z0) * i) / n;
@@ -283,7 +283,7 @@ export function glassWallA(ctx, a, z0, z1, y0, y1, mullion = 3, frame = 0x1a1820
 }
 // Glass wall at fixed z, spanning a
 export function glassWallZ(ctx, z, a0, a1, y0, y1, mullion = 3, frame = 0x1a1820) {
-  ctx.glass.boxMM(a0, y0, z - 0.02, a1, y1, z + 0.02, new THREE.Color(0.45, 0.7, 0.95));
+  ctx.glass.boxMM(a0, y0, z - 0.02, a1, y1, z + 0.02, new THREE.Color(0.6, 0.62, 0.6));
   const n = Math.max(1, Math.round(Math.abs(a1 - a0) / mullion));
   for (let i = 0; i <= n; i++) {
     const a = a0 + ((a1 - a0) * i) / n;

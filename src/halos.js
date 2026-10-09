@@ -53,7 +53,7 @@ export class Halos {
           mv.xy += position.xy * s;
           vUv = position.xy;
           float fog = fogAmount(-mv.z);
-          vCol = aColor * k * (1.0 - fog);
+          vCol = desat(aColor, 0.75) * k * (1.0 - fog) * 0.7;
           gl_Position = projectionMatrix * mv;
         }`,
       fragmentShader: /* glsl */ `

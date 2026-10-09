@@ -15,22 +15,22 @@ export function buildTrack(route, stations) {
   const W = 1.55;
   const profile = [
     // [x, y, r, g, b]
-    [-W, -0.8, 0.06, 0.06, 0.08],
-    [W, -0.8, 0.06, 0.06, 0.08],
-    [W, -0.8, 0.0, 0.94, 1.0],
-    [W, -1.05, 0.0, 0.94, 1.0],
-    [W, -1.05, 0.035, 0.03, 0.05],
-    [W * 0.8, -2.2, 0.02, 0.02, 0.03],
-    [W * 0.8, -2.2, 0.02, 0.02, 0.03],
-    [0.15, -2.2, 0.02, 0.02, 0.03],
-    [0.15, -2.2, 1.0, 0.16, 0.43],
-    [-0.15, -2.2, 1.0, 0.16, 0.43],
-    [-0.15, -2.2, 0.02, 0.02, 0.03],
-    [-W * 0.8, -2.2, 0.02, 0.02, 0.03],
-    [-W * 0.8, -2.2, 0.035, 0.03, 0.05],
-    [-W, -1.05, 0.035, 0.03, 0.05],
-    [-W, -1.05, 0.0, 0.94, 1.0],
-    [-W, -0.8, 0.0, 0.94, 1.0],
+    [-W, -0.8, 0.1, 0.09, 0.085],
+    [W, -0.8, 0.1, 0.09, 0.085],
+    [W, -0.8, 0.75, 0.55, 0.3],
+    [W, -1.05, 0.75, 0.55, 0.3],
+    [W, -1.05, 0.06, 0.05, 0.045],
+    [W * 0.8, -2.2, 0.035, 0.03, 0.028],
+    [W * 0.8, -2.2, 0.035, 0.03, 0.028],
+    [0.15, -2.2, 0.035, 0.03, 0.028],
+    [0.15, -2.2, 0.6, 0.25, 0.15],
+    [-0.15, -2.2, 0.6, 0.25, 0.15],
+    [-0.15, -2.2, 0.035, 0.03, 0.028],
+    [-W * 0.8, -2.2, 0.035, 0.03, 0.028],
+    [-W * 0.8, -2.2, 0.06, 0.05, 0.045],
+    [-W, -1.05, 0.06, 0.05, 0.045],
+    [-W, -1.05, 0.75, 0.55, 0.3],
+    [-W, -0.8, 0.75, 0.55, 0.3],
   ];
   const linear = profile.map(([x, y, r, g, b]) => [x, y, new THREE.Color().setRGB(r, g, b, THREE.SRGBColorSpace)]);
   const P = linear.length;
@@ -60,7 +60,7 @@ export function buildTrack(route, stations) {
   beam.frustumCulled = false;
 
   // pillars
-  const b = new MeshBuilder({ ambient: new THREE.Color(0.5, 0.42, 0.62), maxSeg: 1e9 });
+  const b = new MeshBuilder({ ambient: new THREE.Color(0.55, 0.45, 0.38), maxSeg: 1e9 });
   const spacing = 65;
   for (let s = 0; s < route.length; s += spacing) {
     route.pointAt(s, p);
@@ -73,8 +73,8 @@ export function buildTrack(route, stations) {
     if (top < 6) continue;
     b.box(p.x, top / 2, p.z, 2.4, top, 2.4, 0x2b2933);
     b.box(p.x, top - 0.6, p.z, 4.2, 1.2, 4.2, 0x353340);
-    b.box(p.x + 1.22, top / 2, p.z, 0.08, top, 0.4, col(0xff2a6d, 1.2), { emissive: true });
-    b.box(p.x - 1.22, top / 2, p.z, 0.08, top, 0.4, col(0x00f0ff, 1.2), { emissive: true });
+    b.box(p.x + 1.22, top / 2, p.z, 0.08, top, 0.4, col(0xd0607a, 1.2), { emissive: true });
+    b.box(p.x - 1.22, top / 2, p.z, 0.08, top, 0.4, col(0x6fb3b8, 1.2), { emissive: true });
   }
   const pillars = builderMesh(b);
   const group = new THREE.Group();
