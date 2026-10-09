@@ -30,7 +30,7 @@ Four trains run the loop on a fixed timetable. Each one dwells about 22 s per st
 - `W A S D` to move, `Shift` to sprint, `Q`/`E` to turn
 - `1`–`6` to jump to a station
 
-URL options for testing: `?station=market` (start at a stop), `?t=120` (start the clock later), `?norain`.
+URL options for testing: `?station=market` (start at a stop), `?t=120` (start the clock later), `?rain` (turn rain on).
 
 ## Run locally
 

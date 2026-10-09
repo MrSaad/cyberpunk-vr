@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import { GLSL_COMMON, makeShaderMaterial } from './shared.js';
 import { getNoiseTexture } from './textures.js';
 
-// Sky dome: light-polluted horizon, drifting cloud deck lit from below by the
-// city, a hazy moon. Follows the camera so it never clips.
+// Sky dome: dusk turning to night, an orange afterglow on the western horizon,
+// a dark drifting cloud deck and a few faint stars. Follows the camera so it never clips.
 export function buildSky() {
   const geo = new THREE.SphereGeometry(3000, 48, 24);
   const mat = makeShaderMaterial({
@@ -22,29 +22,35 @@ export function buildSky() {
         vec3 d = normalize(vDir);
         float h = d.y;
         float sd = max(0.0, dot(d, uSunDir));
-        // dusk gradient: hazy orange horizon -> dusty amber -> smoky mauve-grey
-        vec3 band = vec3(0.62, 0.24, 0.08);
-        vec3 upper = vec3(0.16, 0.085, 0.07);
-        vec3 zenith = vec3(0.045, 0.04, 0.055);
-        vec3 c = mix(uFogColor, band, smoothstep(0.0, 0.1, h));
-        c = mix(c, upper, smoothstep(0.08, 0.35, h));
-        c = mix(c, zenith, smoothstep(0.3, 0.85, h));
-        // sun glow through the haze
-        c += uSunColor * (pow(sd, 6.0) * 0.35 + pow(sd, 40.0) * 0.5) * (1.0 - smoothstep(0.0, 0.6, h) * 0.6);
+        // how far round the horizon we are facing the set sun (1 = toward it)
+        float az = dot(normalize(d.xz + 1e-5), normalize(uSunDir.xz)) * 0.5 + 0.5;
+        float sunSide = pow(az, 2.5);
+        // night gradient: dark haze at the horizon -> deep indigo -> near-black zenith
+        vec3 low = vec3(0.022, 0.018, 0.038);
+        vec3 zenith = vec3(0.003, 0.004, 0.011);
+        vec3 c = mix(uFogColor, low, smoothstep(0.0, 0.15, h));
+        c = mix(c, zenith, smoothstep(0.12, 0.7, h));
+        // afterglow of the set sun: an orange band hugging the horizon,
+        // strongest toward the west and fading round to the east
+        float band = (1.0 - smoothstep(0.0, 0.22, h)) * (0.08 + 0.92 * sunSide);
+        c += vec3(0.75, 0.26, 0.06) * band * band * 0.9;
+        c += uSunColor * (pow(sd, 8.0) * 0.4 + pow(sd, 60.0) * 0.5) * (1.0 - smoothstep(0.0, 0.3, h));
         if (h > 0.0) {
-          // stratified smoggy cloud deck lit from the low sun
+          // faint stars through the thin smog, only high up
+          vec2 sc = floor(d.xz / (h + 0.2) * 260.0);
+          float star = step(0.998, hash21(sc)) * smoothstep(0.25, 0.6, h);
+          c += vec3(0.55, 0.6, 0.75) * star * (0.4 + 0.6 * hash21(sc + 7.0));
+          // dark cloud deck, under-lit orange only low toward the sunset
           vec2 uv = d.xz / (h + 0.1) * vec2(0.08, 0.2);
           float n1 = texture2D(uNoise, uv + vec2(uTime * 0.0015, 0.0)).r;
           float n2 = texture2D(uNoise, uv * 2.3 - vec2(uTime * 0.002, 0.0)).g;
-          float cl = smoothstep(0.32, 0.72, n1 * 0.75 + n2 * 0.4) * smoothstep(0.0, 0.06, h);
-          vec3 shadow = vec3(0.09, 0.05, 0.045);
-          vec3 lit = vec3(0.95, 0.45, 0.16) * (0.35 + pow(sd, 3.0) * 1.2);
-          float rimK = smoothstep(0.35, 0.8, n2) * (0.3 + pow(sd, 2.0));
-          vec3 cloudC = mix(shadow, lit, rimK) * (1.0 - smoothstep(0.1, 0.7, h) * 0.6);
-          c = mix(c, cloudC, cl * 0.85);
-          // sun disc, dimmed and reddened by smog
-          float disc = smoothstep(0.9990, 0.9994, dot(d, uSunDir));
-          c += vec3(1.3, 0.62, 0.3) * disc * (1.0 - cl * 0.8);
+          float cl = smoothstep(0.38, 0.75, n1 * 0.75 + n2 * 0.4) * smoothstep(0.0, 0.06, h);
+          vec3 shadow = vec3(0.025, 0.022, 0.035);
+          float glow = sunSide * (1.0 - smoothstep(0.02, 0.3, h));
+          vec3 lit = vec3(0.8, 0.3, 0.1) * glow * (0.5 + pow(sd, 3.0));
+          float rimK = smoothstep(0.35, 0.8, n2);
+          vec3 cloudC = shadow + lit * rimK;
+          c = mix(c, cloudC, cl * 0.8);
         } else {
           c = mix(uFogColor, uFogColor * 0.75, smoothstep(0.0, -0.2, h));
         }
@@ -90,10 +96,10 @@ export function buildSmog() {
       void main(){
         float n = texture2D(uNoise, vW.xz / 900.0 + uTime * 0.003).r;
         float n2 = texture2D(uNoise, vW.xz / 300.0 - uTime * 0.004).g;
-        float a = smoothstep(0.25, 0.8, n * 0.8 + n2 * 0.4) * 0.35;
+        float a = smoothstep(0.25, 0.8, n * 0.8 + n2 * 0.4) * 0.25;
         float dc = distance(cameraPosition, vW);
         a *= smoothstep(15.0, 120.0, dc);
-        vec3 c = mix(vec3(0.42, 0.2, 0.09), vec3(0.3, 0.17, 0.11), n2);
+        vec3 c = mix(vec3(0.13, 0.09, 0.11), vec3(0.09, 0.07, 0.1), n2);
         gl_FragColor = vec4(mix(c, uFogColor, vFog * 0.6), a * (1.0 - vFog * 0.5));
         #include <colorspace_fragment>
       }`,
@@ -149,7 +155,7 @@ export function buildSkyline() {
         vec3 c = vec3(0.05, 0.035, 0.03) + wc * lit * 0.25 * inA;
         float crown = step(h - 2.0, y) * inA;
         c += vec3(0.6, 0.2, 0.1) * crown * step(0.6, hash11(id * 3.3));
-        float haze = 0.72 + 0.22 * (1.0 - smoothstep(0.0, 400.0, y));
+        float haze = 0.45 + 0.3 * (1.0 - smoothstep(0.0, 400.0, y));
         gl_FragColor = vec4(mix(c, uFogColor, haze), 1.0);
         #include <colorspace_fragment>
       }`,

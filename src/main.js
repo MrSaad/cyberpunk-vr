@@ -64,7 +64,7 @@ const screens = new Screens();
 const halos = new Halos();
 const people = new People(31);
 const buildings = new BuildingSet();
-const rain = new Rain(params.has('norain') ? 0 : 7000);
+const rain = new Rain(params.has('rain') ? 7000 : 0);
 const env = { scene, nav, signs, screens, halos, people, buildings, zones: [], obstacles: [], rain, route };
 
 const stations = route.stations.map((st) => {

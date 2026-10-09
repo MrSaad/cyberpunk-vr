@@ -14,12 +14,12 @@ export const NEON = {
 
 export const NEON_LIST = Object.values(NEON).map((h) => new THREE.Color(h));
 
-// Blade Runner style dusk: thick warm haze that swallows the distance.
-export const FOG_COLOR = new THREE.Color(0x9c5c38);
-export const FOG_DENSITY = 0.00145;
-// Low sun sitting in the haze toward the west.
-export const SUN_DIR = new THREE.Vector3(-0.86, 0.07, -0.5).normalize();
-export const SUN_COLOR = new THREE.Color(0xffa060);
+// Late dusk turning to night: a thin dark plum haze over the distance.
+export const FOG_COLOR = new THREE.Color(0x2a2230);
+export const FOG_DENSITY = 0.0011;
+// Sun just setting toward the west, leaving an orange glow on the horizon.
+export const SUN_DIR = new THREE.Vector3(-0.86, 0.03, -0.5).normalize();
+export const SUN_COLOR = new THREE.Color(0xe0703c);
 
 export function col(hex, mul = 1) {
   const c = new THREE.Color(hex);
